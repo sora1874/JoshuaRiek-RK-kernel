@@ -11,11 +11,11 @@
 		sdmode-gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_HIGH>;
 		sdmode-delay = <2>;
 		#sound-dai-cells = <0>;
-		status = "okay";
+		status = "disabled";
 	};
 
 	max98357a_machine: max98357a-machine {
-		status = "okay";
+		status = "disabled";
 		compatible = "simple-audio-card";
 		simple-audio-card,format = "i2s";
 		simple-audio-card,name = "max98357a";
@@ -56,6 +56,43 @@
 		};
 	};
 
+	wm8978_machine: wm8978-machine {
+		status = "okay";
+		compatible = "simple-audio-card";
+		simple-audio-card,format = "i2s";
+		simple-audio-card,name = "audio,wm8978";
+		simple-audio-card,mclk-fs = <256>;
+		simple-audio-card,cpu {
+			sound-dai = <&i2s3_2ch>;
+		};
+		codec_master: simple-audio-card,codec {
+			sound-dai = <&wm8978>;
+		};
+	};
+
+};
+
+&i2c4 {
+	pinctrl-0 = <&i2c4m0_xfer>;
+	pinctrl-names = "default";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	clock-frequency = <400000>;
+
+	status = "okay";
+	wm8978: codec@1a {
+		compatible = "wlf,wm8978";
+		#sound-dai-cells = <0>;
+		reg = <0x1a>;
+		status = "okay";
+		clocks = <&cru I2S3_MCLKOUT>;
+		clock-names = "mclk";
+		assigned-clocks = <&cru I2S3_MCLKOUT>, <&cru I2S3_MCLK_IOE>;
+		assigned-clock-rates = <12288000>;
+		assigned-clock-parents = <&cru I2S3_MCLKOUT_TX>, <&cru I2S3_MCLKOUT>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&i2s3m0_mclk>;
+	};
 };
 
 &pinctrl {
